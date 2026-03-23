@@ -57,7 +57,7 @@ USER QUESTION:
         response = self.model.generate_content(prompt)
         return response.text
        
-st.set_page_config(page_title="PMI Lesson Chatbot", layout="centered")
+st.set_page_config(page_title="Project Management Chatbot", layout="centered")
 
 st.title("📘 Project Management Chatbot")
 st.write("Ask questions based on the lesson content")

@@ -2,7 +2,6 @@ import streamlit as st
 import google.generativeai as genai
 import os
 
-# --- LESSON CONTENT ---
 lesson_text = """
 1. PROJECTS VS. OPERATIONS:
    - Project: A temporary endeavor with a unique result, product, or service.
@@ -33,8 +32,6 @@ lesson_text = """
    - Program: A group of related projects managed together to achieve common benefits.
    - Portfolio: A collection of projects, programs, and operations managed as a group to achieve strategic objectives.
 """
-
-# --- BOT CLASS ---
 class Bot:
     def __init__(self, api_key, lesson_content):
         genai.configure(api_key=api_key)
@@ -59,9 +56,7 @@ USER QUESTION:
 """
         response = self.model.generate_content(prompt)
         return response.text
-
-
-# --- STREAMLIT UI ---
+       
 st.set_page_config(page_title="PMI Lesson Chatbot", layout="centered")
 
 st.title("📘 Project Management Chatbot")
@@ -71,24 +66,20 @@ api_key = st.secrets["GEMINI_API_KEY"]
 
 if api_key:
     bot = Bot(api_key, lesson_text)
-
-    # Chat history
+   
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Display chat history
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # User input
     if prompt := st.chat_input("Ask your question..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Get response
         answer = bot.ask_question(prompt)
 
         st.session_state.messages.append({"role": "assistant", "content": answer})

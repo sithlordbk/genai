@@ -64,7 +64,7 @@ USER QUESTION:
 # --- STREAMLIT UI ---
 st.set_page_config(page_title="PMI Lesson Chatbot", layout="centered")
 
-st.title("📘 Project Management Lesson Chatbot")
+st.title("📘 Project Management Chatbot")
 st.write("Ask questions based on the lesson content")
 
 api_key = st.secrets["GEMINI_API_KEY"]

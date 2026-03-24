@@ -5,17 +5,19 @@ import csv
 def load_customer_data(file_path):
     table_header = "| customer_name | customer_machine | no_of_files |\n| :--- | :--- | :--- |\n"
     table_rows = ""
-
+    
     try:
-        with open(file_path, mode='r', encoding='utf-8') as f:
+        with open(file_path, mode='r', encoding='utf-8-sig') as f: # 'utf-8-sig' handles Excel BOM
             reader = csv.DictReader(f)
+            # Clean the headers (removes accidental spaces)
+            reader.fieldnames = [name.strip() for name in reader.fieldnames]
+            
             for row in reader:
                 table_rows += f"| {row['customer_name']} | {row['customer_machine']} | {row['no_of_files']} |\n"
-
-        full_text = f"### Customer VMs Data \n\n{table_header}{table_rows}"
-        return full_text
-    except FileNotFoundError:
-        return "Error: Customer data file not found."
+        
+        return f"### CUSTOMER DATA\n\n{table_header}{table_rows}"
+    except KeyError as e:
+        return f"Error: Column {e} not found in CSV. Check your headers!"
 
 lesson_text = load_customer_data("customers.csv")
 

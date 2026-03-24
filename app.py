@@ -1,44 +1,32 @@
 import streamlit as st
 import google.generativeai as genai
-import os
+import csv
 
-lesson_text = """
-1. PROJECTS VS. OPERATIONS:
-   - Project: A temporary endeavor with a unique result, product, or service.
-   - Operations: Ongoing, repetitive work to maintain a business or service (e.g., server maintenance).
+def load_customer_data(file_path):
+    table_header = "| customer_name | customer_machine | no_of_files |\n| :--- | :--- | :--- |\n"
+    table_rows = ""
 
-2. ORGANIZATIONAL STRUCTURES:
-   - Functional: Managed by a functional manager; team members report only to them.
-   - Project-Oriented: The Project Manager (PM) has full authority over the budget and team.
-   - Matrix (Weak, Balanced, Strong): A mix where power is shared between PMs and functional managers.
-     * Strong Matrix: PM has more authority.
-     * Weak Matrix: Functional manager has more authority.
+    try:
+        with open(file_path, mode='r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                table_rows += f"| {row['customer_name']} | {row['customer_machine']} | {row['no_of_files']} |\n"
 
-3. ENTERPRISE ENVIRONMENTAL FACTORS (EEFs):
-   - Internal/External conditions, not under the project's control, that influence the project.
-   - Internal EEFs: Infrastructure (servers), IT software (OS, APIs), Resource availability.
-   - External EEFs: Marketplace conditions, legal restrictions, social/cultural influences.
+        full_text = f"### Customer VMs Data \n\n{table_header}{table_rows}"
+        return full_text
+    except FileNotFoundError:
+        return "Error: Customer data file not found."
 
-4. ORGANIZATIONAL PROCESS ASSETS (OPAs):
-   - Plans, processes, policies, and knowledge bases specific to the performing organization.
-   - Examples: Standardized templates, historical data, lessons learned repositories, security policies.
+lesson_text = load_customer_data("customers.csv")
 
-5. PROJECT MANAGEMENT OFFICE (PMO):
-   - Supportive: Provides templates and best practices (low control).
-   - Controlling: Requires compliance with frameworks (moderate control).
-   - Directive: Manages the project directly (high control).
-
-6. PROGRAMS AND PORTFOLIOS:
-   - Program: A group of related projects managed together to achieve common benefits.
-   - Portfolio: A collection of projects, programs, and operations managed as a group to achieve strategic objectives.
-"""
 class Bot:
     def __init__(self, api_key, lesson_content):
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-3-flash-preview')
+        self.model = genai.GenerativeModel('gemini-2.5-flash-lite')
         self.lesson_data = lesson_content
 
         self.system_instruction = (
+            "You are a professional PMI Instructor. "
             "Answer questions based ONLY on the provided lesson context. "
             "If the answer isn't in the context, say you don't know."
         )
@@ -55,17 +43,18 @@ USER QUESTION:
 """
         response = self.model.generate_content(prompt)
         return response.text
-       
+
+
 st.set_page_config(page_title="Project Management Chatbot", layout="centered")
 
-st.title("📘 Project Management Chatbot")
+st.title("Project Management Chatbot")
 st.write("Ask questions based on the lesson content")
 
 api_key = st.secrets["GEMINI_API_KEY"]
 
 if api_key:
     bot = Bot(api_key, lesson_text)
-   
+
     if "messages" not in st.session_state:
         st.session_state.messages = []
 

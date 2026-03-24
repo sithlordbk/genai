@@ -39,7 +39,6 @@ class Bot:
         self.lesson_data = lesson_content
 
         self.system_instruction = (
-            "You are a professional PMI Instructor. "
             "Answer questions based ONLY on the provided lesson context. "
             "If the answer isn't in the context, say you don't know."
         )
